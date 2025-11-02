@@ -6,20 +6,11 @@ import type {
   ConversationInitConfig,
   ConversationInitResponse,
 } from '../types';
-import { getApiConfig } from '../config/api';
+import { resolveApiUrl } from '../config/api';
 
 export type ChatStatus = 'idle' | 'initializing' | 'ready' | 'streaming' | 'error';
 
-const API_BASE = (() => {
-  const config = getApiConfig();
-  try {
-    new URL(config.baseUrl);
-    return config.baseUrl;
-  } catch {
-    console.warn('Invalid VITE_API_BASE_URL, falling back to localhost:17498');
-    return 'http://localhost:17498';
-  }
-})();
+const API_BASE = resolveApiUrl();
 
 const uuid = () =>
   typeof crypto !== 'undefined' && 'randomUUID' in crypto

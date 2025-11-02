@@ -32,6 +32,12 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    cors: {
+      origin: '*',
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      credentials: false
+    },
     proxy: {
       '/api': {
         target: backendTarget,
