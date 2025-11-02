@@ -41,8 +41,10 @@ git push origin main
 ### 2. Cấu hình Backend URL trên Railway
 Trong Railway dashboard → Variables, thêm:
 ```
-VITE_API_BASE_URL=https://your-backend-url-goes-here.railway.app
+VITE_API_BASE_URL=http://103.141.140.243:17498
 ```
+
+**Note:** Railway.toml đã được cấu hình sẵn với URL này. Bạn có thể overwrite trong Railway dashboard nếu cần.
 
 ### 3. Railway CLI
 ```bash
