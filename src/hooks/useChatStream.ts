@@ -65,12 +65,11 @@ export function useChatStream() {
 
     const body = {
       conversation_id: conversationId,
-      bot_id: payload.botId || undefined,
       customer_phone: payload.customerPhone || undefined,
       callcenter_phone: payload.callcenterPhone || undefined,
     };
 
-    const response = await fetch(`${API_BASE}/api/conversation/init`, {
+    const response = await fetch(`${API_BASE}/conversations/chat/stream/${payload.botId}/init`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -137,7 +136,6 @@ export function useChatStream() {
       const body = {
         conversation_id: conversationIdRef.current,
         message: text,
-        messages: history,
         request_from: config.requestFrom,
         index,
         customer_phone: config.customerPhone || undefined,
@@ -146,7 +144,9 @@ export function useChatStream() {
         input_slots: parseInputSlots(config.inputSlots),
       };
 
-      const response = await fetch(`${API_BASE}/chat/stream`, {
+      const botId = '900d0879-705d-4284-96c2-7d1a7156b026';
+
+      const response = await fetch(`${API_BASE}/conversations/chat/stream/${botId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
