@@ -37,3 +37,42 @@ export interface ChatFormConfig extends ConversationInitConfig {
   indexOverride?: number;
   inputSlots: Record<string, string>;
 }
+
+// Webhook types for auto booking
+export type BookingStatus = 'idle' | 'loading' | 'success' | 'error';
+
+export interface WebhookMessage {
+  role: string;
+  content: string;
+}
+
+export interface WebhookConversationData {
+  conversation_id: string;
+  customer_phone: string;
+  callcenter_phone?: string;
+  call_at?: string;
+  pickup_at?: string;
+  hangup_at?: string;
+  hangup_cause?: string;
+  sip_code_q850?: number;
+  audio_url?: string;
+  transfer_result?: string;
+  messages?: WebhookMessage[];
+}
+
+export interface WebhookCallSummary {
+  summary?: string;
+}
+
+export interface WebhookExtraData {
+  call_summary?: WebhookCallSummary;
+}
+
+export interface WebhookPayload {
+  conversation: WebhookConversationData;
+  extra?: WebhookExtraData;
+}
+
+export interface WebhookResponse {
+  [key: string]: unknown;
+}

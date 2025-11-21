@@ -51,6 +51,9 @@ export default function App() {
           onCancel={cancel}
           canCancel={status === 'streaming'}
           lastError={lastError}
+          conversationId={conversationId}
+          customerPhone={config.customerPhone}
+          callcenterPhone={config.callcenterPhone}
         />
       </main>
     </div>

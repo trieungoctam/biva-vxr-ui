@@ -1,6 +1,7 @@
-import { FormEvent, useMemo, useRef, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import type { ChatMessage } from "../types";
 import type { ChatStatus } from "../hooks/useChatStream";
+import { useAutoBooking } from "../hooks/useAutoBooking";
 import MessageBubble from "./MessageBubble";
 
 interface ChatPanelProps {
@@ -10,6 +11,9 @@ interface ChatPanelProps {
     onCancel: () => void;
     canCancel: boolean;
     lastError: string | null;
+    conversationId: string | null;
+    customerPhone?: string;
+    callcenterPhone?: string;
 }
 
 const quickReplies = [
@@ -26,9 +30,14 @@ export default function ChatPanel({
     onCancel,
     canCancel,
     lastError,
+    conversationId,
+    customerPhone,
+    callcenterPhone,
 }: ChatPanelProps) {
     const [input, setInput] = useState("");
     const endRef = useRef<HTMLDivElement>(null);
+
+    const { bookingStatus, bookingResponse, bookingError, triggerBooking, resetBooking } = useAutoBooking();
 
     const isStreaming = status === "streaming";
     const canChat = status === "ready" || status === "streaming";
@@ -36,6 +45,25 @@ export default function ChatPanel({
         () => [...messages].sort((a, b) => a.timestamp - b.timestamp),
         [messages],
     );
+
+    // Reset booking when conversation changes
+    useEffect(() => {
+        resetBooking();
+    }, [conversationId, resetBooking]);
+
+
+    const handleAutoBooking = async () => {
+        if (!conversationId) {
+            console.error("No conversation ID available");
+            return;
+        }
+        if (!customerPhone) {
+            alert("Vui lòng nhập số điện thoại khách hàng trong cấu hình!");
+            return;
+        }
+
+        await triggerBooking(conversationId, customerPhone, sortedMessages, callcenterPhone);
+    };
 
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
@@ -102,8 +130,8 @@ export default function ChatPanel({
                         placeholder={
                             !canChat
                                 ? status === "initializing"
-                                  ? "Đang khởi tạo cuộc trò chuyện..."
-                                  : "Khởi động nhiệm vụ trước..."
+                                    ? "Đang khởi tạo cuộc trò chuyện..."
+                                    : "Khởi động nhiệm vụ trước..."
                                 : "Nhập tin nhắn... (Enter để gửi, Shift+Enter để xuống dòng)"
                         }
                         disabled={status !== "ready" && status !== "streaming"}
@@ -136,6 +164,41 @@ export default function ChatPanel({
                 </div>
             )}
 
+            {conversationId && (
+                <div className="auto-booking-section">
+                    <button
+                        type="button"
+                        className="btn btn-booking"
+                        onClick={handleAutoBooking}
+                        disabled={bookingStatus === 'loading'}
+                        title={!customerPhone ? "Vui lòng nhập số điện thoại khách hàng" : "Đặt vé tự động dựa trên nội dung chat"}
+                    >
+                        {bookingStatus === 'loading' ? (
+                            <>
+                                <span className="spinner">⏳</span> Đang đặt vé...
+                            </>
+                        ) : (
+                            <>🎫 Đặt vé tự động</>
+                        )}
+                    </button>
+
+                    {bookingResponse && (
+                        <div className={`booking-response ${bookingStatus}`}>
+                            <div className="response-header">
+                                {bookingStatus === 'success' ? (
+                                    <><span className="icon">✅</span> Kết quả đặt vé</>
+                                ) : (
+                                    <><span className="icon">❌</span> Lỗi đặt vé</>
+                                )}
+                            </div>
+                            <pre className="response-body">
+                                {JSON.stringify(bookingResponse, null, 2)}
+                            </pre>
+                        </div>
+                    )}
+                </div>
+            )}
+
             {!canChat && (
                 <div className="chat-disabled-notice">
                     <div className="notice-content">
@@ -144,10 +207,10 @@ export default function ChatPanel({
                             {status === "idle"
                                 ? "Vui lòng khởi động nhiệm vụ để bắt đầu trò chuyện"
                                 : status === "initializing"
-                                  ? "Đang khởi tạo cuộc trò chuyện, vui lòng đợi..."
-                                  : status === "error"
-                                    ? "Có lỗi xảy ra, vui lòng thử lại"
-                                    : "Vui lòng khởi động nhiệm vụ để bắt đầu trò chuyện"}
+                                    ? "Đang khởi tạo cuộc trò chuyện, vui lòng đợi..."
+                                    : status === "error"
+                                        ? "Có lỗi xảy ra, vui lòng thử lại"
+                                        : "Vui lòng khởi động nhiệm vụ để bắt đầu trò chuyện"}
                         </span>
                     </div>
                 </div>
