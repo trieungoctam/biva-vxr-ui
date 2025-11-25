@@ -1,46 +1,25 @@
 version: "3.8"
 
 services:
-  # React/Vite frontend
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "3001:80"
-    environment:
-      - NODE_ENV=production
-      - VITE_API_BASE_URL=${BACKEND_URL:-http://host.docker.internal:17498}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    restart: unless-stopped
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # Development server (optional)
-  dev:
+  # Development server (default)
+  app:
     build:
       context: .
       dockerfile: Dockerfile.dev
     ports:
-      - "5173"
+      - "5173:5173"
     volumes:
       - .:/app
       - /app/node_modules
     environment:
       - NODE_ENV=development
-      - VITE_API_BASE_URL=http://localhost:17498
+      - VITE_API_BASE_URL=${VITE_API_BASE_URL:-http://host.docker.internal:17498}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: unless-stopped
     networks:
       - app-network
-    profiles:
-      - dev
-
+      
 networks:
   app-network:
     driver: bridge

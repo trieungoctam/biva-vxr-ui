@@ -14,6 +14,7 @@ interface ChatPanelProps {
     conversationId: string | null;
     customerPhone?: string;
     callcenterPhone?: string;
+    dryRun?: boolean;
 }
 
 const quickReplies = [
@@ -33,6 +34,7 @@ export default function ChatPanel({
     conversationId,
     customerPhone,
     callcenterPhone,
+    dryRun,
 }: ChatPanelProps) {
     const [input, setInput] = useState("");
     const endRef = useRef<HTMLDivElement>(null);
@@ -62,7 +64,7 @@ export default function ChatPanel({
             return;
         }
 
-        await triggerBooking(conversationId, customerPhone, sortedMessages, callcenterPhone);
+        await triggerBooking(conversationId, customerPhone, sortedMessages, callcenterPhone, dryRun);
     };
 
     const handleSubmit = async (event: FormEvent) => {
@@ -171,14 +173,14 @@ export default function ChatPanel({
                         className="btn btn-booking"
                         onClick={handleAutoBooking}
                         disabled={bookingStatus === 'loading'}
-                        title={!customerPhone ? "Vui lòng nhập số điện thoại khách hàng" : "Đặt vé tự động dựa trên nội dung chat"}
+                        title={!customerPhone ? "Vui lòng nhập số điện thoại khách hàng" : dryRun ? "Chạy thử đặt vé (không đặt thật)" : "Đặt vé tự động dựa trên nội dung chat"}
                     >
                         {bookingStatus === 'loading' ? (
                             <>
-                                <span className="spinner">⏳</span> Đang đặt vé...
+                                <span className="spinner">⏳</span> {dryRun ? 'Đang chạy thử...' : 'Đang đặt vé...'}
                             </>
                         ) : (
-                            <>🎫 Đặt vé tự động</>
+                            <>{dryRun ? '🧪 Chạy thử đặt vé' : '🎫 Đặt vé tự động'}</>
                         )}
                     </button>
 
@@ -186,7 +188,7 @@ export default function ChatPanel({
                         <div className={`booking-response ${bookingStatus}`}>
                             <div className="response-header">
                                 {bookingStatus === 'success' ? (
-                                    <><span className="icon">✅</span> Kết quả đặt vé</>
+                                    <><span className="icon">✅</span> {dryRun ? 'Kết quả chạy thử' : 'Kết quả đặt vé'}</>
                                 ) : (
                                     <><span className="icon">❌</span> Lỗi đặt vé</>
                                 )}

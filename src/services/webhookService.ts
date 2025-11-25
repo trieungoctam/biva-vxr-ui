@@ -9,13 +9,15 @@ const API_BASE = resolveApiUrl();
  * @param customerPhone - Customer phone number
  * @param messages - Full conversation history
  * @param callcenterPhone - Optional callcenter phone
+ * @param dryRun - If true, backend will return fake booking parameters instead of real booking
  * @returns Webhook response object
  */
 export async function triggerAutoBooking(
     conversationId: string,
     customerPhone: string,
     messages: ChatMessage[],
-    callcenterPhone?: string
+    callcenterPhone?: string,
+    dryRun?: boolean
 ): Promise<WebhookResponse> {
     // Build webhook payload according to API spec
     const payload: WebhookPayload = {
@@ -29,6 +31,9 @@ export async function triggerAutoBooking(
                 role: msg.role,
                 content: msg.content,
             })),
+        },
+        extra: {
+            dry_run: dryRun,
         },
     };
 

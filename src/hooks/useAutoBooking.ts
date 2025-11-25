@@ -10,7 +10,8 @@ interface UseAutoBookingReturn {
         conversationId: string,
         customerPhone: string,
         messages: ChatMessage[],
-        callcenterPhone?: string
+        callcenterPhone?: string,
+        dryRun?: boolean
     ) => Promise<void>;
     resetBooking: () => void;
 }
@@ -25,14 +26,15 @@ export function useAutoBooking(): UseAutoBookingReturn {
             conversationId: string,
             customerPhone: string,
             messages: ChatMessage[],
-            callcenterPhone?: string
+            callcenterPhone?: string,
+            dryRun?: boolean
         ) => {
             setBookingStatus('loading');
             setBookingError(null);
             setBookingResponse(null);
 
             try {
-                const response = await triggerAutoBooking(conversationId, customerPhone, messages, callcenterPhone);
+                const response = await triggerAutoBooking(conversationId, customerPhone, messages, callcenterPhone, dryRun);
                 setBookingResponse(response);
                 setBookingStatus('success');
             } catch (error) {

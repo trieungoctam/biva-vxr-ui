@@ -54,6 +54,7 @@ export default function App() {
           conversationId={conversationId}
           customerPhone={config.customerPhone}
           callcenterPhone={config.callcenterPhone}
+          dryRun={config.dryRun}
         />
       </main>
     </div>

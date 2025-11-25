@@ -36,6 +36,7 @@ export interface ChatFormConfig extends ConversationInitConfig {
   requestId?: string;
   indexOverride?: number;
   inputSlots: Record<string, string>;
+  dryRun?: boolean;
 }
 
 // Webhook types for auto booking
@@ -66,6 +67,7 @@ export interface WebhookCallSummary {
 
 export interface WebhookExtraData {
   call_summary?: WebhookCallSummary;
+  dry_run?: boolean;
 }
 
 export interface WebhookPayload {

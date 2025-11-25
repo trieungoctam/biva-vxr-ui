@@ -23,9 +23,9 @@ export default function ConfigPanel({
 }: ConfigPanelProps) {
     const handleField =
         (key: keyof ChatFormConfig) =>
-        (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-            onChange({ ...config, [key]: event.target.value });
-        };
+            (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+                onChange({ ...config, [key]: event.target.value });
+            };
 
     const handleSlotValueChange =
         (slotKey: string) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -112,6 +112,17 @@ export default function ConfigPanel({
                         onChange={handleField("callcenterPhone")}
                         placeholder="1900..."
                     />
+                </label>
+                <label style={{ flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
+                    <input
+                        type="checkbox"
+                        checked={config.dryRun ?? false}
+                        onChange={(event) =>
+                            onChange({ ...config, dryRun: event.target.checked })
+                        }
+                        style={{ width: 'auto', margin: 0 }}
+                    />
+                    <span>Dry Run Mode (Chế độ chạy thử)</span>
                 </label>
             </div>
 
